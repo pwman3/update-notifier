@@ -1,0 +1,13 @@
+server {
+
+	listen 80;
+	server_name pwman.tiram.it;
+
+	location / {
+	    include         uwsgi_params;
+	    uwsgi_pass      unix:/var/www/pwman/app.sock;
+	}
+
+	error_log /var/www/pwman/log/nginx-error.log;
+}
+
