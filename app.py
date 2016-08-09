@@ -6,9 +6,10 @@ This file is distributed under the terms of the
   GNU AFFERO GENERAL PUBLIC LICENSE version 3.
 
 """
-
+    
 import bottle
 from bottle import request
+import os
 import datetime as dt
 import logging
 
@@ -24,7 +25,7 @@ app = application = bottle.Bottle()
 
 class User(Model):
 
-    ip = CharField()
+    hashinfo = CharField()
     os = CharField()
     version = CharField()
     date = DateField()
@@ -40,14 +41,23 @@ except peewee.OperationalError:
     pass
 
 
+@app.route('/static/<filename:path>')
+def static(filename):
+    '''
+    Serve static files
+    '''
+    return bottle.static_file(filename, root='./static')
+
+
 @app.route('/is_latest/')
 def show_version():
     '''
     '''
+    hashinfo = request.GET.get("hash", "")
     user_os = request.GET.get("os", "")
     pwman_version = request.GET.get("current_version", "")
     date = dt.date.today()
-    User.create(ip=request.remote_addr, os=user_os, version=pwman_version,
-                date=date)
+    User.create(hashinfo=hashinfo, os=user_os, version=pwman_version, date=date)
 
     return '0.9.0'
+
