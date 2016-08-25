@@ -9,5 +9,6 @@ This app will ask pypi and\or github for the latest versions.
 The reason why Pwman3 does not do it directly is that I don't want to
 add dependencies to Pwman3 and I would also like to gather statistics of usage.
 
-Everyone interested can opt-out, and NOTHING will be sent from pwman3 besides the actual
-version used EVER.
+Everyone interested can opt-out. When starting Pwman, a string of your hostname
+and your username, in addtion to the version currently used are sent over.
+If you want you can disable this behavior. But please don't.
