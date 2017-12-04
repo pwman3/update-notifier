@@ -79,4 +79,4 @@ def show_version():
     User.create(hashinfo=hashinfo, os=user_os, version=pwman_version,
                 date=date)
 
-    return '0.9.1'
+    return '0.9.3'
