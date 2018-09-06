@@ -24,8 +24,17 @@ from cachetools.func import ttl_cache
 from peewee import Model, CharField, DateField
 
 
-logging.basicConfig(filename='log.txt', format=logging.BASIC_FORMAT)
+def get_logger(name):
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    fh = logging.FileHandler('app.log')
+    fh.setLevel(logging.DEBUG)
+    # add fh to logger
+    logger.addHandler(fh)
+    return logger
 
+
+logger = get_logger('pwman3')
 
 db = PeeweePlugin('sqlite:///all.db')
 app = application = bottle.Bottle()
@@ -53,16 +62,18 @@ except peewee.OperationalError:
 @ttl_cache(maxsize=2, ttl=3600, timer=time.time, typed=False)
 def pypi_version():
     """check current version againt latest version"""
-    print("fetching...")
+    logger.debug("%s fetching ..." % dt.datetime.utcnow().strftime("%Y-%m-%d %H:%m"))
     pypi_url = "https://pypi.org/pypi/pwman3/json"
     try:
         res = urlopen(pypi_url, timeout=0.5)
         if res.status != 200:
+            logger.debug("res: %s" % res.status)
             return 'x.x.x'
 
-        info = json.loads(res.read())
+        info = json.loads(res.read().decode())
         return info['info']['version']
     except Exception as E:
+        logger.warn("Exception: %s" % E)
         return 'x.x.x'
 
 
