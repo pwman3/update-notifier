@@ -7,16 +7,25 @@ This file is distributed under the terms of the
 
 """
 
-import bottle
-from bottle import request
 import datetime as dt
+import json
 import logging
+import time
+
+from urllib.request import urlopen
+
+import bottle
+import peewee
+
+
+from bottle import request
+from bottle_peewee import PeeweePlugin
+from cachetools.func import ttl_cache
+from peewee import Model, CharField, DateField
+
 
 logging.basicConfig(filename='log.txt', format=logging.BASIC_FORMAT)
 
-from bottle_peewee import PeeweePlugin
-from peewee import Model, CharField, DateField
-import peewee
 
 db = PeeweePlugin('sqlite:///all.db')
 app = application = bottle.Bottle()
@@ -31,6 +40,7 @@ class User(Model):
 
     class Meta(object):
         database = db.proxy
+
 
 app.install(db)
 
