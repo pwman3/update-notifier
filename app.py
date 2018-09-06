@@ -50,6 +50,22 @@ except peewee.OperationalError:
     pass
 
 
+@ttl_cache(maxsize=2, ttl=3600, timer=time.time, typed=False)
+def pypi_version():
+    """check current version againt latest version"""
+    print("fetching...")
+    pypi_url = "https://pypi.org/pypi/pwman3/json"
+    try:
+        res = urlopen(pypi_url, timeout=0.5)
+        if res.status != 200:
+            return 'x.x.x'
+
+        info = json.loads(res.read())
+        return info['info']['version']
+    except Exception as E:
+        return 'x.x.x'
+
+
 @app.route('/')
 def index():
     return """
@@ -89,4 +105,4 @@ def show_version():
     User.create(hashinfo=hashinfo, os=user_os, version=pwman_version,
                 date=date)
 
-    return '0.9.4'
+    return pypi_version()
