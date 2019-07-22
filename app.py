@@ -15,7 +15,7 @@ import time
 from urllib.request import urlopen
 
 import bottle
-import peewee
+from peewee import SqliteDatabase
 
 
 from bottle import request
@@ -36,7 +36,10 @@ def get_logger(name):
 
 logger = get_logger('pwman3')
 
-db = PeeweePlugin('sqlite:///all.db')
+db = SqliteDatabase("all.db")
+
+db_plugin = PeeweePlugin(db)
+
 app = application = bottle.Bottle()
 
 
@@ -48,21 +51,21 @@ class User(Model):
     date = DateField()
 
     class Meta(object):
-        database = db.proxy
+        database = db
 
 
 app.install(db)
 
-try:
-    db.database.create_table(User)
-except peewee.OperationalError:
-    pass
+
+with db:
+    db.create_tables([User], safe=True)
 
 
 @ttl_cache(maxsize=2, ttl=3600, timer=time.time, typed=False)
 def pypi_version():
     """check current version againt latest version"""
-    logger.debug("%s fetching ..." % dt.datetime.utcnow().strftime("%Y-%m-%d %H:%m"))
+    logger.debug(
+        "%s fetching ..." % dt.datetime.utcnow().strftime("%Y-%m-%d %H:%m"))
     pypi_url = "https://pypi.org/pypi/pwman3/json"
     try:
         res = urlopen(pypi_url, timeout=0.5)
@@ -117,3 +120,8 @@ def show_version():
                 date=date)
 
     return pypi_version()
+
+
+if __name__ == "__main__":
+    bottle.run(app)
+
