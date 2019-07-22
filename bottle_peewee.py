@@ -140,7 +140,7 @@ class PeeweePlugin(object):
         # conf = context['config'].get('peewee') or {}
 
         conf = context.config
-        db = conf.get('db', self.db)
+        db = conf.get('db', self.dburi)
         keyword = conf.get('keyword', self.keyword)
 
         # print 'AUTOCOMMIT:', db.autocommit
