@@ -48,11 +48,11 @@ OPTS ?=
 
 # usage: make docker-build TAG=0.1
 docker-build::  ## build a docker image
-	docker build $(OPTS) -t $(REGISTRY)/$(ORG)/$(IMG):$(TAG) -f docker/Dockerfile .
+	docker build $(OPTS) -t $(REGISTRY)/$(ORG)/$(IMG):v$(TAG) -f docker/Dockerfile .
 
 docker-push::
-	docker push $(REGISTRY)/$(ORG)/$(IMG):$(TAG)
+	docker push $(REGISTRY)/$(ORG)/$(IMG):v$(TAG)
 
 docker-run::  ## run the docker image locally
 	sudo chown -vR 33:33 $(CURDIR)/data/
-	sudo docker run -it -p 9001:9001 -v $(CURDIR)/data:/var/lib/app/db:rw $(REGISTRY)/$(ORG)/$(IMG):$(TAG)
+	sudo docker run -it -p 9001:9001 -v $(CURDIR)/data:/var/lib/app/db:rw $(REGISTRY)/$(ORG)/$(IMG):v$(TAG)

@@ -1,0 +1,8 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: service
+spec:
+  ports:
+  - protocol: TCP
+    port: 9001

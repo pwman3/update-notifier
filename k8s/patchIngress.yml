@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+spec:
+  tls:
+  - hosts:
+    - pwman.tiram.it
+    - pwman-test.tiram.it
+    secretName: pwman-tiram-it
+  rules:
+  - host: pwman-test.tiram.it
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: service-pwman-update-notifier
+            port:
+              number: 9001
+  - host: pwman.tiram.it
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: service-pwman-update-notifier
+            port:
+              number: 9001

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    #metadata:
+    #  lables:
+    #    app: label # this gets overwritten by kustomize
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: app
+        image: registry/org/app:latest # this get overwritten by kustomize
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PRODUCTION_DB
+          value: /var/lib/app/db/production.db
+        ports:
+        - containerPort: 9001
+          name: app
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/lib/app/db/
+          name: db-data
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
