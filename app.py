@@ -10,6 +10,7 @@ This file is distributed under the terms of the
 import datetime as dt
 import json
 import logging
+import os
 import time
 
 from urllib.request import urlopen
@@ -27,7 +28,7 @@ from peewee import Model, CharField, DateField
 def get_logger(name):
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
-    fh = logging.FileHandler('app.log')
+    fh = logging.StreamHandler()
     fh.setLevel(logging.DEBUG)
     # add fh to logger
     logger.addHandler(fh)
@@ -36,7 +37,7 @@ def get_logger(name):
 
 logger = get_logger('pwman3')
 
-db = SqliteDatabase("all.db")
+db = SqliteDatabase(os.getenv("PRODUCTION_DB", 'all.db'))
 
 db_plugin = PeeweePlugin(db)
 
