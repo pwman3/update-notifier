@@ -17,9 +17,9 @@ def calculate_client_info():  # pragma: no cover
 def is_latest_version(version, client_info):  # pragma: no cover
     """check current version againt latest version"""
     try:
-        url = ("http://localhost:8080/is_latest/?"
-               "current_version={}&os={}&hash={}".format(
-                version, sys.platform, client_info))
+        url = (f"http://localhost:{os.getenv('APP_PORT', '8080')}/is_latest/?"
+               f"current_version={version}&os={sys.platform}&hash={client_info}"
+               )
         res = urllib.request.urlopen(url, timeout=0.5)
         data = res.read()  # This will return entire content.
 
@@ -34,8 +34,9 @@ def is_latest_version(version, client_info):  # pragma: no cover
 
 
 def run():
-    print(is_latest_version(os.getenv("VERSION"), calculate_client_info()))
-
+    info = calculate_client_info()
+    assert is_latest_version('0.13.1', info) == (None, True)
+    assert is_latest_version('0.9.1', info) == (None, False)
 
 if __name__ == "__main__":
     run()
