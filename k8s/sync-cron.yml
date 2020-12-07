@@ -1,0 +1,36 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: update-tracking
+  namespace: pwman-update-notifier
+spec:
+  schedule: "21 11  * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          imagePullSecrets:
+          - name: regcred
+          containers:
+          - name: app
+            command: ["/usr/bin/sqlite3", "/var/lib/app/db/production.db", "INSERT into Tracking(UNIXEPOCH, date, users) select strftime('%s','now'), date('now'), count(distinct hashinfo) from user;"]
+            image: localhost:32000/oz123/pwman-update-notifier:v5d74f2c  # this get overwritten by kustomize
+            imagePullPolicy: IfNotPresent
+            env:
+            - name: PRODUCTION_DB
+              value: /var/lib/app/db/production.db
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+            - mountPath: /var/lib/app/db/
+              name: db-data
+          restartPolicy: Never
+          dnsPolicy: ClusterFirst
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          volumes:
+          - name: db-data
+            persistentVolumeClaim:
+              claimName: pvc-pwman-update-notifier
